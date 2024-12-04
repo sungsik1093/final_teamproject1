@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>띵유(mju united) - 메인 페이지</title>
+    <!--<link rel="stylesheet" href="mainstyle.css">-->
+    <link rel="stylesheet" href="{{ url_for('static', filename='mainstyle.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='banner.css') }}">
+    <script src="https://kit.fontawesome.com/ce8994702e.js" crossorigin="anonymous"></script>
+    <script src="{{ url_for('static', filename='jquery-3.7.1.js') }}"></script>
+    <script src="{{ url_for('static', filename='banner.js') }}"></script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</head>
+
+<body>
+
+    <!-- 사이트 이름과 상단 메뉴 -->
+    <header class="header">
+        <h1 class="site-name">띵유</h1>
+        <div class="top-menu">
+            <div class="links">
+                <a href="{{ url_for('mypage') }}" class="menu-link" target="_blank">마이페이지</a>
+                <a href="/qa" class="menu-link" target="_blank">Q&A 사이트</a>
+                <a href="#" id="club_register" class="menu-link" target="_blank">동아리 등록하기</a>
+
+            </div>
+            <div class="auth">
+                <input type="text" placeholder="아이디" class="input-field">
+                <input type="password" placeholder="비밀번호" class="input-field">
+                <button class="login-button">로그인</button>
+                <a href="/signup" target="_blank"><button class="signup-button">회원가입</button></a>
+
+            </div>
+        </div>
+    </header>
+
+    <section class="banner-container">
+        <div class="banner">
+            <ul class="imgslide">
+                <li><img src="{{ url_for('static', filename='이미지파일/paris1.jpg') }}" alt="slideimg1"></li>
+                <li><img src="{{ url_for('static', filename='이미지파일/paris2.jpg') }}" alt="slideimg2"></li>
+                <li><img src="{{ url_for('static', filename='이미지파일/paris3.jpg') }}" alt="slideimg3"></li>
+            </ul>
+        </div>
+        <div class="dotbtn">
+            <button dot-index="0"></button>
+            <button dot-index="1"></button>
+            <button dot-index="2"></button>
+        </div>
+        <div class="lrbtn">
+            <button class="prev"><i class="fa-solid fa-angle-left"></i></button>
+            <button class="next"><i class="fa-solid fa-angle-right"></i></button>
+        </div>
+    </section>
+
+    <nav class="category-nav">
+        <div class="categories">
+            <a href="#all" class="category-link" onclick="showCategory('all')">전체</a>
+            <a href="#academic" class="category-link" onclick="showCategory('academic')">학술</a>
+            <a href="#performance" class="category-link" onclick="showCategory('performance')">공연</a>
+            <a href="#volunteer" class="category-link" onclick="showCategory('volunteer')">봉사</a>
+            <a href="#sports" class="category-link" onclick="showCategory('sports')">운동</a>
+            <a href="#hobby" class="category-link" onclick="showCategory('hobby')">취미</a>
+            <a href="#religion" class="category-link" onclick="showCategory('religion')">종교</a>
+            <a href="#etc" class="category-link" onclick="showCategory('etc')">기타</a>
+        </div>
+
+        <div class="search">
+            <input type="text" placeholder="동아리 이름 검색" class="search-input">
+            <button class="search-button">검색</button>
+            <select class="sort-dropdown">
+                <option value="alphabetical">가나다 순</option>
+                <option value="popularity">인기순</option>
+            </select>
+        </div>
+    </nav>
+
+    <!-- 카테고리 섹션 -->
+    <main class="category-section">
+        <section id="all" class="category-content">전체 카테고리 콘텐츠가 여기에 표시됩니다.</section>
+        <section id="academic" class="category-content">학술 카테고리 콘텐츠가 여기에 표시됩니다.</section>
+        <section id="performance" class="category-content">공연 카테고리 콘텐츠가 여기에 표시됩니다.</section>
+        <section id="volunteer" class="category-content">봉사 카테고리 콘텐츠가 여기에 표시됩니다.</section>
+        <section id="sports" class="category-content">운동 카테고리 콘텐츠가 여기에 표시됩니다.</section>
+        <section id="hobby" class="category-content">취미 카테고리 콘텐츠가 여기에 표시됩니다.</section>
+        <section id="religion" class="category-content">종교 카테고리 콘텐츠가 여기에 표시됩니다.</section>
+        <section id="etc" class="category-content">기타 카테고리 콘텐츠가 여기에 표시됩니다.</section>
+    </main>
+
+    <script>
+        
+    </script>
+
+
+</body>
+
+</html>

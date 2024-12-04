@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <title>마이페이지</title>
+    <style>
+        .container {
+            max-width: 500px;
+            margin-top: 50px;
+        }
+
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-img:hover {
+            transform: scale(1.1);
+            transition: transform 0.3s ease-in-out;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2 class="text-center">마이페이지</h2>
+        <div class="text-center my-3">
+            <input type="file" id="fileInput" accept="image/*" style="display: none;">
+            <img src="default-profile.png" id="profileImg" class="profile-img" alt="프로필 사진">
+            <br>
+            <button class="btn btn-primary mt-2" onclick="document.getElementById('fileInput').click();">사진 선택</button>
+        </div>
+        <form>
+            <div class="container">
+                <h2 class="text-center">마이페이지</h2>
+                <form id="update-info-form">
+                    <div class="form-group">
+                        <label for="name">이름:</label>
+                        <input type="text" id="name" name="name" value="{{ user['name'] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">이메일:</label>
+                        <input type="email" id="email" name="email" value="{{ user['email'] }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="category">관심 동아리:</label>
+                        <input type="text" id="category" name="category" value="{{ user['category'] | join(', ') }}">
+                    </div>
+                    <button type="button" id="update-info-btn" class="btn btn-success">정보 수정</button>
+                </form>
+            </div>
+
+            <!-- 비밀번호 수정 섹션 -->
+            <div class="password-section">
+                <h3>비밀번호 변경</h3>
+                <form id="password-change-form">
+                    <div class="form-group">
+                        <label for="current-password">현재 비밀번호:</label>
+                        <input type="password" id="current-password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-password">새 비밀번호:</label>
+                        <input type="password" id="new-password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">새 비밀번호 확인:</label>
+                        <input type="password" id="confirm-password" required>
+                    </div>
+                    <button type="button" id="change-password-btn" class="btn btn-primary">비밀번호 변경</button>
+                </form>
+            </div>
+    </div>
+    <div class="text-center">
+        <button type="button" class="btn btn-success" onclick="saveChanges()">수정</button>
+        <button type="button" class="btn btn-secondary" onclick="leaveReview()">후기</button>
+    </div>
+    </form>
+    </div>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profileImg').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+            } else {
+                passwordInput.type = 'password';
+            }
+        }
+
+        function saveChanges() {
+            alert('변경 사항이 저장되었습니다.');
+        }
+
+        function leaveReview() {
+            alert('후기 작성 페이지로 이동합니다.');
+        }
+
+        document.getElementById("change-password-btn").addEventListener("click", function () {
+            const currentPassword = document.getElementById("current-password").value;
+            const newPassword = document.getElementById("new-password").value;
+            const confirmPassword = document.getElementById("confirm-password").value;
+
+            // 비밀번호 유효성 검증
+            if (newPassword !== confirmPassword) {
+                alert("새 비밀번호가 일치하지 않습니다.");
+                return;
+            }
+
+            if (newPassword.length < 8 || !/[!@#$%^&*]/.test(newPassword)) {
+                alert("비밀번호는 최소 8자리이며, 특수 문자를 포함해야 합니다.");
+                return;
+            }
+
+            // 비밀번호 변경 요청 보내기
+            fetch("/change_password", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    currentPassword: currentPassword,
+                    newPassword: newPassword
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("비밀번호가 성공적으로 변경되었습니다.");
+                        // 입력칸 초기화
+                        document.getElementById("password-change-form").reset();
+                    } else {
+                        alert(data.message || "비밀번호 변경에 실패했습니다.");
+                    }
+                })
+                .catch(error => {
+                    console.error("비밀번호 변경 요청 실패:", error);
+                    alert("서버와 통신 중 오류가 발생했습니다.");
+                });
+        });
+
+    </script>
+</body>
+
+</html>

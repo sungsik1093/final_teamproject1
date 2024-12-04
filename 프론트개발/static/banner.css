@@ -1,0 +1,54 @@
+*{
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+}
+
+.banner{
+    width: 1000px;
+    overflow: hidden;
+}
+
+.imgslide{
+    width: 3000px;
+    height: 340px;
+    transition: transform 0.5s;
+}
+
+.banner li{
+    width: 1000px;
+    float: left;
+}
+
+.lrbtn{
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    top: -220px;
+}
+
+.prev, .next{
+    background: transparent;
+    border: none;
+    color: gold;
+    font-size: 40px;
+    cursor: pointer;
+}
+
+.dotbtn{
+    text-align: center;
+    position: relative;
+    top: -70px;
+}
+
+.dotbtn button{
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+}
+
+.dotbtn button.active {
+    background-color: #333;
+}

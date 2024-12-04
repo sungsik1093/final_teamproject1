@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Q&A Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            text-align: center;
+            border-bottom: 2px solid #0078d4;
+            padding-bottom: 10px;
+            color: #0078d4;
+        }
+
+        .question {
+            font-weight: bold;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        .answer {
+            margin-top: 5px;
+            padding-left: 20px;
+            color: #555;
+            display: none;
+        }
+
+        .other-questions {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f0f4f8;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .chat-link {
+            text-decoration: none;
+            color: #0078d4;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .chat-link:hover {
+            color: #005bb5;
+        }
+
+        .question:hover {
+            color: #005bb5;
+            transition: color 0.3s;
+        }
+
+        .answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out, padding 0.5s;
+        }
+
+        .question.open+.answer {
+            max-height: 200px;
+            padding: 10px;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const questions = document.querySelectorAll('.question');
+            questions.forEach(question => {
+                question.addEventListener('click', function () {
+                    this.classList.toggle('open');
+                    const answer = this.nextElementSibling;
+                    if (this.classList.contains('open')) {
+                        answer.style.display = 'block';
+                        answer.style.maxHeight = answer.scrollHeight + "px";
+                    } else {
+                        answer.style.display = 'none';
+                        answer.style.maxHeight = null;
+                    }
+                });
+            });
+        });
+        document.querySelectorAll('.question').forEach(question => {
+            question.addEventListener('click', function () {
+                this.classList.toggle('open');
+                this.nextElementSibling.style.maxHeight = this.nextElementSibling.style.maxHeight ? null : this.nextElementSibling.scrollHeight + "px";
+            });
+        });
+
+
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Q&A</h2>
+        <div class="question">1. 동아리 가입은 어떻게 하나요?</div>
+        <div class="answer">A. 안녕하세요.</div>
+
+        <div class="question">2. 동아리 탈퇴는 어떻게 하나요?</div>
+        <div class="answer">A. 두 번째 질문에 대한 답변입니다.</div>
+
+        <div class="question">3. 아이디를 잊어버렸어요.</div>
+        <div class="answer">A. 세 번째 질문에 대한 답변입니다.</div>
+
+        <div class="other-questions">
+            그 외의 질문은 <a class="chat-link" href="https://open.kakao.com" target="_blank">카카오톡 오픈 채팅방</a>을 이용해주세요.
+        </div>
+    </div>
+</body>
+
+</html>

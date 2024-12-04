@@ -1,0 +1,145 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* 상단 메뉴 스타일 */
+.header {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.site-name {
+    font-size: 2em;
+    color: #333;
+}
+
+.top-menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #333;
+    color: white;
+}
+
+.links {
+    display: flex;
+}
+
+.menu-link {
+    margin-right: 15px;
+    color: white;
+    text-decoration: none;
+}
+
+.auth {
+    display: flex;
+    align-items: center;
+}
+
+.input-field {
+    margin-right: 5px;
+    padding: 5px;
+}
+
+.login-button,
+.signup-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+
+/* 홍보 배너 스타일 */
+.banner {
+    background-color: #ffefba;
+    text-align: center;
+    padding: 15px;
+    font-size: 1.2em;
+    color: #333;
+}
+
+/* 네비게이션 바 스타일 */
+.category-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f4f4f4;
+    padding: 10px 0;
+}
+
+.categories {
+    display: flex;
+}
+
+.category-link {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+
+/* 검색창 스타일 */
+.search {
+    margin-left: 20px;
+}
+
+.search-input {
+    padding: 5px;
+}
+
+.search-button {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+/* 카테고리 섹션 스타일 */
+.category-section {
+    padding: 20px;
+}
+
+.category-content {
+    display: none;
+    padding: 10px;
+    border-top: 2px solid #007bff;
+}
+
+.category-link:hover {
+    background-color: #007bff;
+    color: white;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.banner {
+    animation: fadeIn 2s ease-in-out infinite alternate;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0.8;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.club-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.club-status {
+    font-weight: bold;
+    color: #999;
+}
