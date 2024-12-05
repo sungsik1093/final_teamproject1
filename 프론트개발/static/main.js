@@ -104,19 +104,14 @@ function viewClub(clubId) {
 document.querySelector(".login-button").addEventListener("click", function () {
     const userIdInput = document.querySelector("input[type='text']");
     const passwordInput = document.querySelector("input[type='password']");
-    const loginButton = document.querySelector(".login-button");
-
-    // 사용자 입력 값 가져오기
     const userId = userIdInput.value;
     const password = passwordInput.value;
 
-    // 아이디와 비밀번호 입력 확인
     if (!userId || !password) {
         alert("아이디와 비밀번호를 입력해주세요.");
         return;
     }
 
-    // 서버로 로그인 요청 보내기
     fetch("/login", {
         method: "POST",
         headers: {
@@ -124,20 +119,21 @@ document.querySelector(".login-button").addEventListener("click", function () {
         },
         body: JSON.stringify({ userNum: userId, password: password })
     })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // 입력칸과 버튼 자리를 메시지로 변경
-                showLoginSuccessMessage(userIdInput, passwordInput, loginButton);
-            } else {
-                alert(data.message || "로그인 실패! 아이디와 비밀번호를 확인하세요.");
-            }
-        })
-        .catch(error => {
-            console.error("로그인 요청 실패:", error);
-            alert("서버와 통신 중 문제가 발생했습니다.");
-        });
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // 로그인 성공 처리
+        } else {
+            alert(data.message || "로그인 실패! 아이디와 비밀번호를 확인하세요.");
+        }
+    })
+    .catch(error => {
+        console.error("로그인 요청 실패:", error);
+        alert("서버와 통신 중 문제가 발생했습니다.");
+    });
 });
+
+
 
 // 로그인 성공 시 입력칸 자리에 메시지 표시
 function showLoginSuccessMessage(userIdInput, passwordInput, loginButton) {
