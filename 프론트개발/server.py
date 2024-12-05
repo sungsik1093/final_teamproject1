@@ -35,6 +35,7 @@ def authenticate_token(func):
             request.user = decoded_token  # 디코딩된 사용자 정보를 요청에 추가
             return func(*args, **kwargs)
         except jwt.ExpiredSignatureError:
+            print("에러 발생! 401!")
             return jsonify({"success": False, "message": "토큰이 만료되었습니다. 다시 로그인해주세요."}), 401
         except jwt.InvalidTokenError:
             return jsonify({"success": False, "message": "유효하지 않은 토큰입니다."}), 401
@@ -79,6 +80,14 @@ def main_page():
 
     # 데이터를 템플릿에 전달
     return render_template('./main.html', groups=group_data) 
+    # dummy_data = [
+    #     {"id": 1, "name": "학술 동아리", "description": "학술 관련 활동", "image": "/static/images/academic.jpg", "category": "학술"},
+    #     {"id": 2, "name": "공연 동아리", "description": "공연 관련 활동", "image": "/static/images/performance.jpg", "category": "공연"},
+    #     {"id": 3, "name": "봉사 동아리", "description": "봉사 관련 활동", "image": "/static/images/volunteer.jpg", "category": "봉사"}
+    # ]
+
+    # # 더미 데이터를 템플릿에 전달
+    # return render_template('./main.html', groups=dummy_data)
 
 
 @app.route('/login', methods=['POST'])
@@ -244,30 +253,60 @@ def get_clubs():
     return {"clubs": filtered_clubs}
 
 @app.route('/register_club', methods=['GET', 'POST'])
+@authenticate_token
 def register_club():
     if request.method == 'GET':
         # GET 요청 시 클라이언트에 HTML 페이지 반환
         return render_template('club_register.html')
 
     elif request.method == 'POST':
-        # 클라이언트에서 전송된 데이터 가져오기
-        data = request.get_json()
+    # 사용자 입력 데이터 가져오기
+        form_data = {
+            'name': request.form.get('club_name'),  # 동아리 이름
+            'GroupLeader':request.form.get('club_leader'),
+            'category': request.form.get('category'),  # 동아리 카테고리
+            'description': request.form.get('club_description'),  # 동아리 소개
+            'GroupTime': request.form.get('meeting_time'),  # 모임 시간
+            'GroupRoom': request.form.get('club_room'),  # 동아리방 위치
+            'Contact': request.form.get('contact')  # 연락처
+        }
 
-        # Node.js API로 동아리 등록 요청
-        api_url = 'https://teamproject-jv72.onrender.com/api/group_form'
-        try:
-            response = requests.post(api_url, json=data)  # 데이터를 Node.js로 전송
-            response.raise_for_status()
+        # 파일 가져오기
+    files = {
+        'GroupImage': request.files.get('GroupImage'),
+        'IntroduceImage': request.files.get('IntroduceImage'),
+        'ActiveLog': request.files.get('ActiveLog')
+    }
 
-            if response.status_code == 201:  # Node.js API가 성공적으로 처리된 경우
-                new_club = response.json()  # Node.js에서 반환된 동아리 데이터
-                club_list.append(new_club)  # 로컬 메모리 리스트에 추가 (임시)
-                return {"success": True, "message": "동아리 등록 완료", "data": new_club}
-            else:
-                return {"success": False, "message": response.json().get("message", "동아리 등록 실패")}
-        except requests.exceptions.RequestException as e:
-            print("Node.js API 호출 실패:", e)
-            return {"success": False, "message": "서버와의 통신 중 오류가 발생했습니다."}, 500
+    # 디버깅용 로그
+    print("Form Data:", form_data)
+    print("Files Data:", files)
+
+    # Node.js API URL 및 헤더 설정
+    api_url = 'https://teamproject-jv72.onrender.com/api/group_form'
+    headers = {
+        "Authorization": f"Bearer {request.cookies.get('jwt')}"
+    }
+
+    # 파일 전송 데이터 준비
+    files_to_send = {
+        key: (file.filename, file.stream, file.content_type)
+        for key, file in files.items() if file
+    }
+
+    
+    try:
+        # Node.js API 호출
+        response = requests.post(api_url, data=form_data, files=files_to_send, headers=headers)
+        response.raise_for_status()
+
+        if response.status_code == 201:
+            return {"success": True, "message": "동아리 등록 완료"}
+        else:
+            return {"success": False, "message": "동아리 등록 실패"}
+    except requests.exceptions.RequestException as e:
+        print("Node.js API 호출 실패:", e)
+        return {"success": False, "message": "서버와의 통신 중 오류가 발생했습니다."}, 500
 
 
 @app.route('/get_club_details', methods=['GET'])
