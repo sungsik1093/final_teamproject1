@@ -80,13 +80,76 @@
     <!-- 카테고리 섹션 -->
     <main class="category-section">
         <section id="all" class="category-content">전체 카테고리 콘텐츠가 여기에 표시됩니다.</section>
-        <section id="academic" class="category-content">학술 카테고리 콘텐츠가 여기에 표시됩니다.</section>
-        <section id="performance" class="category-content">공연 카테고리 콘텐츠가 여기에 표시됩니다.</section>
+        <!-- <section id="academic" class="category-content">학술 카테고리 콘텐츠가 여기에 표시됩니다.</section> -->
+        <!-- <section id="performance" class="category-content">공연 카테고리 콘텐츠가 여기에 표시됩니다.</section>
         <section id="volunteer" class="category-content">봉사 카테고리 콘텐츠가 여기에 표시됩니다.</section>
         <section id="sports" class="category-content">운동 카테고리 콘텐츠가 여기에 표시됩니다.</section>
         <section id="hobby" class="category-content">취미 카테고리 콘텐츠가 여기에 표시됩니다.</section>
         <section id="religion" class="category-content">종교 카테고리 콘텐츠가 여기에 표시됩니다.</section>
-        <section id="etc" class="category-content">기타 카테고리 콘텐츠가 여기에 표시됩니다.</section>
+        <section id="etc" class="category-content">기타 카테고리 콘텐츠가 여기에 표시됩니다.</section> -->
+        <section id="academic" class="category-content">
+            {% for club in groups if club.category == "학술" %}
+            <div class="club-card">
+                <h3><a href="/introduceclub?id={{ club.id }}">{{ club.name }}</a></h3>
+                <p>{{ club.description }}</p>
+                <img src="{{ club.image }}" alt="{{ club.name }} 대표 이미지">
+            </div>
+            {% endfor %}
+        </section>
+        <section id="performance" class="category-content">
+            {% for club in groups if club.category == "공연" %}
+            <div class="club-card">
+                <h3><a href="/introduceclub?id={{ club.id }}">{{ club.name }}</a></h3>
+                <p>{{ club.description }}</p>
+                <img src="{{ club.image }}" alt="{{ club.name }} 대표 이미지">
+            </div>
+            {% endfor %}
+        </section>
+        <section id="volunteer" class="category-content">
+            {% for club in groups if club.category == "봉사" %}
+            <div class="club-card">
+                <h3><a href="/introduceclub?id={{ club.id }}">{{ club.name }}</a></h3>
+                <p>{{ club.description }}</p>
+                <img src="{{ club.image }}" alt="{{ club.name }} 대표 이미지">
+            </div>
+            {% endfor %}
+        </section>
+        <section id="sports" class="category-content">
+            {% for club in groups if club.category == "운동" %}
+            <div class="club-card">
+                <h3><a href="/introduceclub?id={{ club.id }}">{{ club.name }}</a></h3>
+                <p>{{ club.description }}</p>
+                <img src="{{ club.image }}" alt="{{ club.name }} 대표 이미지">
+            </div>
+            {% endfor %}
+        </section>
+        <section id="hobby" class="category-content">
+            {% for club in groups if club.category == "취미" %}
+            <div class="club-card">
+                <h3><a href="/introduceclub?id={{ club.id }}">{{ club.name }}</a></h3>
+                <p>{{ club.description }}</p>
+                <img src="{{ club.image }}" alt="{{ club.name }} 대표 이미지">
+            </div>
+            {% endfor %}
+        </section>
+        <section id="religion" class="category-content">
+            {% for club in groups if club.category == "종교" %}
+            <div class="club-card">
+                <h3><a href="/introduceclub?id={{ club.id }}">{{ club.name }}</a></h3>
+                <p>{{ club.description }}</p>
+                <img src="{{ club.image }}" alt="{{ club.name }} 대표 이미지">
+            </div>
+            {% endfor %}
+        </section>
+        <section id="etc" class="category-content">
+            {% for club in groups if club.category == "기타" %}
+            <div class="club-card">
+                <h3><a href="/introduceclub?id={{ club.id }}">{{ club.name }}</a></h3>
+                <p>{{ club.description }}</p>
+                <img src="{{ club.image }}" alt="{{ club.name }} 대표 이미지">
+            </div>
+            {% endfor %}
+        </section>
     </main>
 
     <script>
