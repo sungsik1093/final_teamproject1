@@ -101,38 +101,77 @@ function viewClub(clubId) {
     window.location.href = `/introduceclub.html?id=${clubId}`;
 }
 
-document.querySelector(".login-button").addEventListener("click", function () {
-    const userIdInput = document.querySelector("input[type='text']");
-    const passwordInput = document.querySelector("input[type='password']");
-    const userId = userIdInput.value;
-    const password = passwordInput.value;
+document.addEventListener("DOMContentLoaded", function () {
+    fetch("/check_login_status", {
+        method: "GET",
+        credentials: "include" // 쿠키 전송
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // 로그인 상태라면, UI 업데이트
+                const userIdInput = document.querySelector("input[type='text']");
+                const passwordInput = document.querySelector("input[type='password']");
+                const loginButton = document.querySelector(".login-button");
+                showLoginSuccessMessage(userIdInput, passwordInput, loginButton);
+            } else {
+                console.log("로그인 상태가 아닙니다.");
+            }
+        })
+        .catch(error => console.error("로그인 상태 확인 실패:", error));
 
-    if (!userId || !password) {
-        alert("아이디와 비밀번호를 입력해주세요.");
-        return;
+    const loginButton = document.querySelector(".login-button");
+    console.log("찾은 로그인 버튼: ", loginButton);
+
+    if (loginButton) {
+        loginButton.addEventListener("click", function () {
+            console.log("로그인 버튼 클릭됨"); // 버튼 클릭 로그
+
+            const userIdInput = document.querySelector("input[type='text']");
+            const passwordInput = document.querySelector("input[type='password']");
+            const userId = userIdInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            console.log("로그인 요청 시작: ", { userId, password }); // 로그인 요청 로그
+
+            // 아이디와 비밀번호 입력 확인
+            if (!userId || !password) {
+                alert("아이디와 비밀번호를 입력해주세요.");
+                return;
+            }
+
+            // 서버로 로그인 요청 보내기
+            fetch("/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ userNum: userId, password: password })
+            })
+                .then(response => {
+                    console.log("응답 상태 코드: ", response.status); // 응답 상태 로그
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("서버 응답 데이터: ", data); // 서버 응답 로그
+                    if (data.success) {
+                        alert("로그인 성공");
+                        showLoginSuccessMessage(userIdInput, passwordInput, loginButton);
+                    } else {
+                        alert(data.message || "로그인 실패");
+                    }
+                })
+                .catch(error => {
+                    console.error("로그인 요청 실패: ", error); // 요청 실패 로그
+                });
+        });
+    } else {
+        console.error("로그인 버튼을 찾을 수 없습니다!");
     }
-
-    fetch("/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ userNum: userId, password: password })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // 로그인 성공 처리
-        } else {
-            alert(data.message || "로그인 실패! 아이디와 비밀번호를 확인하세요.");
-        }
-    })
-    .catch(error => {
-        console.error("로그인 요청 실패:", error);
-        alert("서버와 통신 중 문제가 발생했습니다.");
-    });
 });
-
 
 
 // 로그인 성공 시 입력칸 자리에 메시지 표시
@@ -143,7 +182,21 @@ function showLoginSuccessMessage(userIdInput, passwordInput, loginButton) {
     loginButton.style.display = "none";
 
     // 메시지 표시
+    const parentElement = document.querySelector(".auth"); // 부모 요소를 명확히 지정
+    if (!parentElement) {
+        console.error("부모 요소를 찾을 수 없습니다!"); // 디버깅용 로그
+        return;
+    }
+
+    // 기존 메시지가 있는지 확인 (중복 방지)
+    const existingMessage = parentElement.querySelector(".success-message");
+    if (existingMessage) {
+        console.log("이미 성공 메시지가 표시되어 있습니다.");
+        return;
+    }
+
     const successMessage = document.createElement("div");
+    successMessage.className = "success-message"; // 중복 방지를 위한 클래스 추가
     successMessage.textContent = "로그인이 되었습니다!";
     successMessage.style.fontSize = "16px";
     successMessage.style.color = "#4CAF50";
@@ -151,8 +204,8 @@ function showLoginSuccessMessage(userIdInput, passwordInput, loginButton) {
     successMessage.style.marginTop = "10px";
 
     // 부모 요소에 메시지 삽입
-    const parent = userIdInput.parentElement;
-    parent.appendChild(successMessage);
+    //const parent = userIdInput.parentElement;
+    parentElement.appendChild(successMessage);
 }
 
 document.getElementById("update-info-btn").addEventListener("click", function () {
