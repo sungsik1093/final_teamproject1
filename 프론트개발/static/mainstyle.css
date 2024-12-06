@@ -55,7 +55,7 @@ body {
 }
 
 /* 홍보 배너 스타일 */
-.banner {
+.banner-container {
     background-color: #ffefba;
     text-align: center;
     padding: 15px;
@@ -109,6 +109,11 @@ body {
     display: none;
     padding: 10px;
     border-top: 2px solid #007bff;
+    display:none;
+}
+
+.category-content.active {
+    display: block; /* 활성화된 카테고리만 표시 */
 }
 
 .category-link:hover {
@@ -117,7 +122,7 @@ body {
     transition: background-color 0.3s, color 0.3s;
 }
 
-.banner {
+/* .banner {
     animation: fadeIn 2s ease-in-out infinite alternate;
 }
 
@@ -129,17 +134,4 @@ body {
     100% {
         opacity: 1;
     }
-}
-
-.club-item {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin: 10px;
-    border-radius: 5px;
-    background-color: #fff;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-.club-status {
-    font-weight: bold;
-    color: #999;
-}
+} */
