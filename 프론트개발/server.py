@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify, make_response
+from flask import Flask, render_template, request, redirect, url_for, jsonify, make_response, session
 from functools import wraps
 import os
 import requests
@@ -42,6 +42,37 @@ def authenticate_token(func):
 
     return wrapper
 
+@app.route('/introduceclub/<int:club_id>', methods=['GET'])
+def render_introduceclub(club_id):
+    # 기본 HTML만 렌더링
+    print(f"[INFO] Render introduceclub.html for club_id: {club_id}")
+    return render_template('introduceclub.html')
+
+
+@app.route('/api/group/<int:club_id>', methods=['GET'])
+def get_group(club_id):
+    # Node.js 백엔드 URL 구성
+    api_url = f'https://teamproject-jv72.onrender.com/api/group/{club_id}'
+
+    try:
+        # Node.js 백엔드에서 데이터 가져오기
+        print(f"[INFO] Fetching data from Node.js backend: {api_url}")
+        response = requests.get(api_url)
+        print(f"[DEBUG] Response status: {response.status_code}")  # 응답 상태 코드 확인
+        response.raise_for_status()  # 오류가 있으면 예외 발생
+
+        # Node.js에서 받은 응답 데이터를 JSON으로 반환
+        group_data = response.json()
+        print(f"[DEBUG] Response data: {group_data}")  # 받은 데이터 출력
+        return group_data
+    except requests.exceptions.RequestException as e:
+        # Node.js API 호출 오류 처리
+        error_message = f"서버 오류: {str(e)}"
+        print(f"[ERROR] Node.js API 호출 오류: {error_message}")
+        return {"success": False, "message": error_message}, 500
+
+    
+
 @app.route('/check_login_status', methods=['GET'])
 def check_login_status():
     """로그인 상태 확인"""
@@ -65,7 +96,7 @@ def main_page():
 
     # Query parameters (optional: category, sortBy)
     params = {
-        'category': request.args.get('category', 'IT'),
+        'category': request.args.get('category', 'all'),
         'sortBy': request.args.get('sortBy', 'latest')
     }
 
@@ -78,16 +109,12 @@ def main_page():
         # API 호출 실패 시 기본 데이터 처리
         group_data = {"error": "Failed to fetch data", "details": str(e)}
 
-    # 데이터를 템플릿에 전달
-    return render_template('./main.html', groups=group_data) 
-    # dummy_data = [
-    #     {"id": 1, "name": "학술 동아리", "description": "학술 관련 활동", "image": "/static/images/academic.jpg", "category": "학술"},
-    #     {"id": 2, "name": "공연 동아리", "description": "공연 관련 활동", "image": "/static/images/performance.jpg", "category": "공연"},
-    #     {"id": 3, "name": "봉사 동아리", "description": "봉사 관련 활동", "image": "/static/images/volunteer.jpg", "category": "봉사"}
-    # ]
+    # 로그인 상태 확인 (세션에서 사용자 ID 확인)
+    is_logged_in = 'user_id' in session
 
-    # # 더미 데이터를 템플릿에 전달
-    # return render_template('./main.html', groups=dummy_data)
+    # 데이터를 템플릿에 전달
+    return render_template('./main.html', groups=group_data, is_logged_in=is_logged_in)##username=username
+
 
 
 @app.route('/login', methods=['POST'])
@@ -271,16 +298,11 @@ def register_club():
             'Contact': request.form.get('contact')  # 연락처
         }
 
-        # 파일 가져오기
     files = {
         'GroupImage': request.files.get('GroupImage'),
         'IntroduceImage': request.files.get('IntroduceImage'),
         'ActiveLog': request.files.get('ActiveLog')
     }
-
-    # 디버깅용 로그
-    print("Form Data:", form_data)
-    print("Files Data:", files)
 
     # Node.js API URL 및 헤더 설정
     api_url = 'https://teamproject-jv72.onrender.com/api/group_form'
@@ -325,12 +347,19 @@ def get_club_details():
     except ValueError:
         return {"success": False, "message": "유효하지 않은 동아리 ID입니다."}, 400
 
+# @app.route('/logout', methods=['POST'])
+# def logout():
+#     """로그아웃 엔드포인트"""
+#     response = make_response(jsonify({"success": True, "message": "로그아웃 성공"}))
+#     response.delete_cookie('jwt')  # JWT 쿠키 삭제
+#     return response
+
 @app.route('/logout', methods=['POST'])
 def logout():
-    """로그아웃 엔드포인트"""
-    response = make_response(jsonify({"success": True, "message": "로그아웃 성공"}))
-    response.delete_cookie('jwt')  # JWT 쿠키 삭제
-    return response
+    session.pop('user_id', None)  # 세션에서 사용자 ID 제거
+    return {"success": True, "message": "로그아웃 성공"}
+
+
 
 # 배포 준비
 if __name__ == "__main__":
