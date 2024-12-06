@@ -203,6 +203,7 @@
             <h2>동아리 소개</h2>
             <p>우리 동아리는 다양한 활동을 통해 커뮤니티와 소통하며, 모두가 함께 성장할 수 있는 공간을 제공합니다.</p>
             <img src="club_image.jpg" alt="동아리 사진" class="club-image">
+
             <div class="club-info">
                 <!---->
             </div>
@@ -346,15 +347,24 @@
         };
 
         document.addEventListener("DOMContentLoaded", function () {
-            const urlParams = new URLSearchParams(window.location.search);
-            const clubId = urlParams.get('id'); // URL에서 동아리 ID 가져오기
+            const currentURL = window.location.pathname;
+            const clubId = currentURL.split('/').pop(); // URL의 마지막 부분에서 id 추출
+
+            // 디버깅용 로그 추가
+            console.log("URL에서 추출한 clubId:", clubId);
 
             if (clubId) {
-                fetch(`/get_club_details?id=${clubId}`)
-                    .then(response => response.json())
+                fetch(`/api/group/${clubId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
                     .then(data => {
-                        if (data.success) {
-                            displayClubDetails(data.club);
+                        console.log("서버 응답 데이터:", data); // 서버 응답 디버깅
+                        if (data) {
+                            displayClubDetails(data);
                         } else {
                             alert("동아리 정보를 불러올 수 없습니다.");
                         }
@@ -368,17 +378,14 @@
         function displayClubDetails(club) {
             const clubInfo = document.querySelector(".club-info");
             clubInfo.innerHTML = `
-        <p><strong>회장:</strong> ${club.leader}</p>
-        <p><strong>동아리방:</strong> ${club.room}</p>
-        <p><strong>연락처:</strong> ${club.contact}</p>
-        <p><strong>모임시간:</strong> ${club.meeting_time}</p>
-        <p><strong>모집기간:</strong> ${club.recruitment_period || '정보 없음'}</p>
+        <p><strong>회장:</strong> ${club.GroupLeader}</p>
+        <p><strong>동아리방:</strong> ${club.GroupRoom}</p>
+        <p><strong>연락처:</strong> ${club.Contact}</p>
+        <p><strong>모임시간:</strong> ${club.GroupTime || '정보 없음'}</p>
     `;
             document.querySelector("h1").textContent = club.name; // 동아리 이름 설정
             document.getElementById("intro").textContent = club.description; // 소개
-            document.getElementById("activities").textContent = club.activities; // 활동 내용
         }
-
 
 
     </script>
