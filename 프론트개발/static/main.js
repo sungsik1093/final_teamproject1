@@ -1,22 +1,30 @@
+console.log("main.js 로드됨");
+
 // 페이지가 로드될 때 전체 카테고리를 기본으로 표시
 document.addEventListener("DOMContentLoaded", function () {
     showCategory('all');
     fetchClubs();
 });
 
-// 특정 카테고리만 보여주고 나머지는 숨기는 함수
-function showCategory(category) {
-    const sections = document.querySelectorAll('.category-content');
+window.viewClub = function (clubId) {
+    console.log("viewClub 호출됨, clubId:", clubId);
+    if (!clubId) {
+        alert("동아리 ID가 유효하지 않습니다.");
+        return;
+    }
+    window.location.href = `/introduceclub/${clubId}`;
+};
 
-    // 모든 섹션을 숨기기
-    sections.forEach((section) => {
-        section.style.display = 'none';
+
+function showCategory(category) {
+    const allSections = document.querySelectorAll('.category-content');
+    allSections.forEach(section => {
+        section.classList.remove('active');  // 모든 카테고리 숨김
     });
 
-    // 선택한 카테고리만 표시
     const activeSection = document.getElementById(category);
     if (activeSection) {
-        activeSection.style.display = 'block';
+        activeSection.classList.add('active');  // 선택된 카테고리만 표시
     }
 }
 
@@ -97,9 +105,6 @@ document.querySelectorAll('.category-link').forEach(link => {
     });
 });
 
-function viewClub(clubId) {
-    window.location.href = `/introduceclub.html?id=${clubId}`;
-}
 
 document.addEventListener("DOMContentLoaded", function () {
     fetch("/check_login_status", {
@@ -250,14 +255,38 @@ function displayClubs(clubs) {
         clubElement.innerHTML = `
             <h3>${club.name}</h3>
             <p>${club.category} | ${club.description}</p>
-            <p class="club-status">${club.status}</p>
+            <p class="club-status">${club.status || ''}</p>
             <button onclick="viewClub(${club.id})">자세히 보기</button>
         `;
         allSection.appendChild(clubElement);
     });
 }
 
-function viewClub(clubId) {
-    // 동아리 정보를 보여줄 페이지로 이동
-    window.location.href = `/introduceclub.html?id=${clubId}`;
-}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', () => {
+            fetch('/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message);  // "로그아웃 성공" 메시지 표시
+                        window.location.href = '/';  // 메인 페이지로 리다이렉트
+                    } else {
+                        alert('로그아웃에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('로그아웃 요청 실패:', error);
+                    alert('서버와 통신 중 오류가 발생했습니다.');
+                });
+        });
+    }
+});
