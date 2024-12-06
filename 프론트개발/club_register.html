@@ -177,10 +177,10 @@
                 <textarea id="club-description" name="club_description" rows="4"
                     placeholder="동아리 소개를 입력하세요."></textarea>
                 <label for="description-image">동아리 소개 이미지:</label>
-                <input type="file" id="description-image" name="description_image" accept="image/*">
+                <input type="file" id="description-image" name="IntroduceImage" accept="image/*" required>
                 <div id="description-image-preview"></div>
             </div>
-
+            <!--
             <div class="form-group">
                 <label for="club-activities">활동 내용:</label>
                 <textarea id="club-activities" name="club_activities" rows="4"
@@ -189,11 +189,21 @@
                 <input type="file" id="activities-image" name="activities_image" accept="image/*">
                 <div id="activities-image-preview"></div>
             </div>
-
+        -->
             <div class="form-group">
                 <label for="club-image">동아리 대표 사진:</label>
-                <input type="file" id="club-image" name="club_image" accept="image/*">
+                <input type="file" id="club-image" name="GroupImage" accept="image/*" required>
                 <div id="image-preview"></div>
+            </div>
+
+            <div class="form-group">
+                <p>이 파일을 올리고 이 파일대로 작성해주세요.</p>
+                <a href="/static/활동내용 증명서.docx" download>활동내용 증명서 다운로드</a>
+            </div>
+
+            <div class="form-group">
+                <label for="activity-document">활동 내용 문서 업로드:</label>
+                <input type="file" id="activity-document" name="ActiveLog" accept=".doc, .docx, .pdf" required>
             </div>
 
             <button type="submit" class="submit-button">등록하기</button>
@@ -215,28 +225,28 @@
                 const inputElement = document.getElementById(inputId);
                 const previewContainer = document.getElementById(previewContainerId);
 
-                inputElement.addEventListener('change', (event) => {
+                inputElement.addEventListener("change", (event) => {
                     const file = event.target.files[0];
-                    previewContainer.innerHTML = ''; // 기존 내용을 초기화
+                    previewContainer.innerHTML = ""; // 기존 내용을 초기화
 
                     if (file) {
-                        if (!file.type.startsWith('image/')) {
-                            alert('이미지 파일만 업로드 가능합니다!');
+                        if (!file.type.startsWith("image/")) {
+                            alert("이미지 파일만 업로드 가능합니다!");
                             return;
                         }
 
                         const reader = new FileReader();
                         reader.onload = () => {
-                            const img = document.createElement('img');
+                            const img = document.createElement("img");
                             img.src = reader.result;
-                            img.style.maxWidth = '100%';
-                            img.style.height = 'auto';
-                            img.style.marginTop = '10px';
-                            img.style.borderRadius = '10px';
+                            img.style.maxWidth = "100%";
+                            img.style.height = "auto";
+                            img.style.marginTop = "10px";
+                            img.style.borderRadius = "10px";
 
-                            const fileName = document.createElement('p');
+                            const fileName = document.createElement("p");
                             fileName.textContent = `파일명: ${file.name}`;
-                            fileName.style.fontSize = '0.9em';
+                            fileName.style.fontSize = "0.9em";
 
                             previewContainer.appendChild(img);
                             previewContainer.appendChild(fileName);
@@ -247,56 +257,64 @@
             };
 
             // 이미지 미리보기 초기화
-            previewImage('club-image', 'image-preview');
-            previewImage('description-image', 'description-image-preview');
-            previewImage('activities-image', 'activities-image-preview');
+            previewImage("club-image", "image-preview");
+            previewImage("description-image", "description-image-preview");
+            previewImage("activities-image", "activities-image-preview");
 
             // 폼 제출 유효성 검증
-            const clubRegisterForm = document.getElementById('club-register-form');
-            clubRegisterForm.addEventListener('submit', function (event) {
-                const clubName = document.getElementById('club-name').value.trim();
-                const clubLeader = document.getElementById('club-leader').value.trim();
-                const contact = document.getElementById('contact').value.trim();
-                const category = document.getElementById('category').value;
+            const clubRegisterForm = document.getElementById("club-register-form");
+            clubRegisterForm.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                // 필수 필드 유효성 검사
+                const clubName = document.getElementById("club-name").value.trim();
+                const clubLeader = document.getElementById("club-leader").value.trim();
+                const contact = document.getElementById("contact").value.trim();
+                const category = document.getElementById("category").value;
 
                 if (!clubName || !clubLeader || !contact || !category) {
-                    alert('모든 필수 입력란을 작성해주세요.');
-                    event.preventDefault();
+                    alert("모든 필수 입력란을 작성해주세요.");
                     return;
                 }
 
                 if (!/^010-\d{4}-\d{4}$/.test(contact)) {
-                    alert('올바른 연락처 형식(010-1234-5678)을 입력해주세요.');
-                    event.preventDefault();
+                    alert("올바른 연락처 형식(010-1234-5678)을 입력해주세요.");
+                    return;
                 }
+
+                // FormData 객체 생성
+                const formData = new FormData(clubRegisterForm);
+
+                // FormData 객체에 담긴 데이터 확인 (디버깅용)
+                for (const [key, value] of formData.entries()) {
+                    console.log(`${key}:`, value);
+                }
+
+                // 서버로 데이터 전송
+                fetch("/register_club", {
+                    method: "POST",
+                    body: formData,
+                })
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then((data) => {
+                        if (data.success) {
+                            alert("동아리가 성공적으로 등록되었습니다!");
+                            window.location.href = "/"; // 메인 페이지로 이동
+                        } else {
+                            alert(data.message || "동아리 등록에 실패했습니다.");
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("동아리 등록 요청 실패:", error);
+                        alert("서버와 통신 중 오류가 발생했습니다.");
+                    });
             });
         });
-
-        document.getElementById("club-register-form").addEventListener("submit", function (event) {
-            event.preventDefault();
-
-            const formData = new FormData(this);
-
-            fetch("/register_club", {
-                method: "POST",
-                body: JSON.stringify(Object.fromEntries(formData)),
-                headers: { "Content-Type": "application/json" }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("동아리가 성공적으로 등록되었습니다!");
-                        window.location.href = "/"; // 메인 페이지로 이동
-                    } else {
-                        alert(data.message || "동아리 등록에 실패했습니다.");
-                    }
-                })
-                .catch(error => {
-                    console.error("동아리 등록 요청 실패:", error);
-                    alert("서버와 통신 중 오류가 발생했습니다.");
-                });
-        });
-
     </script>
 </body>
 
